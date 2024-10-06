@@ -6,4 +6,4 @@ I will list the books which have readed.
 
 + AndroidFridaBeginnersBook
     - there has 12 chapters.
-        * 1.enviroment ready
+        * 1. enviroment ready.
