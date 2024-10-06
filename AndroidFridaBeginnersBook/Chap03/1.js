@@ -30,6 +30,7 @@ function change_args(){
         console.log("Java.Use.Successfully!") //定位类成功！
         MainAcitivity.fun.implementation = function(x,y){
             console.log("orignal args: x => ",x,", y => ",y)
+            // Changes have been made here
             var ret_value = this.fun(2, 5);
             return ret_value
         }
