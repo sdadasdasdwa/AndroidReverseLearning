@@ -71,3 +71,15 @@ List some static code decompilation tools that you maybe use.
 
     Finally, you can find the OnClick function operation make the REPL effect.
 
+## frida development philosophy
+1. Objection Assisted localization
+    ```
+    // install and traverse all activity later start corresponding activity
+    android intent launch activity com.example.CaculatorActivity
+
+    // verify if the function exists
+    android hooking list class_methods com.example.CalculatorActivity
+
+    // hook the method
+    android hooking watch class method com.example.CalculatorActivity.caculate --dump-args --dump-backtrace --dump-return
+    ```
