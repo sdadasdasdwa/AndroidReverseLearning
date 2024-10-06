@@ -8,4 +8,5 @@ I will list the books which have readed.
     - there has 12 chapters.
         * 1. enviroment ready.
         * 2. Android Reverse basic
-        * 3. 
+        * 3. Frida Reverse Getting Started with Java Layer Hook
+        
