@@ -33,4 +33,11 @@ function getTotalValue(){
         })
     })
 }
+
+rpc.exports = {
+    callsecretfunc : CallSecretFunc,
+    gettotalvalue : getTotalValue
+}
+
 setImmediate(getTotalValue)
+
