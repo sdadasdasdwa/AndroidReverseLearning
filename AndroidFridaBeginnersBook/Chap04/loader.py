@@ -1,4 +1,4 @@
-// scaled RPC called
+# scaled RPC called
 import frida, sys
 
 def on_message(message, data):
