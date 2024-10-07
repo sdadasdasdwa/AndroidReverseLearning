@@ -58,7 +58,8 @@ List some static code decompilation tools that you maybe use.
     }
     ```
     Then you know what make the voice noise. And then we touch the unlock logic.
-4. UnLock Button
+    
+4. UnLock Button？
     when you click unlock button, you will find some functions are called.
     Following the principle that the function printed first is called first, we will hook a method instead of the whole class methods.
     ```
