@@ -83,13 +83,16 @@ List some static code decompilation tools that you maybe use.
 
     TIPS: the backtrace content perform that functions printed first is called last.
 
-    Finally, you can find the OnClick function operation make the REPL effect.
+    Finally, we can summarized that use Objection can help us localize the important code.
 
 ## frida development philosophy
 
 1. Objection Assisted localization
 
     ```frida
+    // list activities
+    android hooking list activities
+
     // install and traverse all activity later start corresponding activity
     android intent launch activity com.example.CaculatorActivity
 
@@ -98,4 +101,46 @@ List some static code decompilation tools that you maybe use.
 
     // hook the method
     android hooking watch class method com.example.CalculatorActivity.caculate --dump-args --dump-backtrace --dump-return
+    ```
+
+    We can see the origin code and find that the calculate function use the sub function of Arith class.
+
+    To verify whether the sub function is called, we try to test.
+
+    First, iterate the class.
+
+    ```frida
+    android hooking list classes
+    ```
+
+    Tips: Before running the objection to inject App, checkout to `~/.objection` directory
+
+    clear the old `objection.log`. After that, re-inject App and run the traverse code.
+
+    Finally you will find Arith Class in the memory.
+
+    Second, hook the sub function.
+
+    ```frida
+    android hooking watch class_method com.example.xxx.sub --dump-args --dump-backtrace --dump--return
+    ```
+
+    you will find the sub function overloads.
+
+    Third, use firda scripts to modify parameters and actively invoke.
+
+    ```frida
+    function main(){
+        Java.perform(function(){
+            var Arith = Java.use("com.example.xxx.Arith)
+            Arith.sub.overload('java.lang.String','java.lang.String').implementation = function(str,str2){
+                var result = this.sub(str,str2)
+                console.log('result=>',result)
+                console.log(Java.use("android.util.log")
+                            .getStackTraceString(Java.use("java.lang.Trowable))
+                            .$new()))
+                return result
+            }
+        })
+    }
     ```
