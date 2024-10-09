@@ -21,3 +21,42 @@ android heap searrch instances android.App.AlertDialog
 android heap searrch instances android.App.Dialog
 android heap searrch instances android.wdiget.PopupWindow
 ```
+
+Recommand an Objection plugin - Wallbreaker, which enhances Objection's 
+memory search functionality  with practical examples.
+
+```frida
+objection -g com.hd.zhibo explore -P /plugins/
+
+plugin wallbreaker objectionsearch android.app.AlertDialog
+# print: [0x2582] xxx
+
+plugin wallbreaker objectdump 0x2582
+# The text content displayed in the upgrade prompt pop-up.
+```
+
+But sorry, the com.hd.zhibo App has already outdate and is no longer maintained.So I can't screencap any picture.
+
+Since the Hook has no effect if triggered after the function call, and the sample app's 
+upgrade prompt pops up as soon as the app enters the main page, it's necessary to ensure
+that the sample is hooked as soon as the startup function is invoked，so
+
+```frida
+objection -g com.hd.zhibo explore -s "android hooking watch class android.App.AlertDialog"
+```
+
+Then you will find that some functions is invoked, like
+
+```frida
+[xxx] Called android.App.AlertDialog.resolveDialogTheme
+[xxx] Called android.App.AlertDialog.resolveDialogTheme
+[xxx] Called android.App.AlertDialog.onCreate
+```
+
+After testing, choose onCreate function to hook and print stack trace.
+
+```frida
+android hooking watch class_method adnroid.APp.ALertDialog.onCreate --dump-args --dump-backtrace --dump-return
+```
+
+
