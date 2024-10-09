@@ -10,5 +10,6 @@ In Android, there are three main comman ways to implement pop-ups:
 2. android.App.AlertDialog
 3. android.widget.PopupWindow
 
+To find the upgrade dialog, decompile source code and search for relevent characters, like this:
 
 ![test picture](../Sceenshots/image.png)
