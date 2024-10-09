@@ -10,3 +10,5 @@ In Android, there are three main comman ways to implement pop-ups:
 2. android.App.AlertDialog
 3. android.widget.PopupWindow
 
+
+![test picture](../Sceenshots/image.png)
