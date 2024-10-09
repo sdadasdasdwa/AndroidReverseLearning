@@ -13,3 +13,11 @@ In Android, there are three main comman ways to implement pop-ups:
 To find the upgrade dialog, decompile source code and search for relevent characters, like this:
 
 ![test picture](../Sceenshots/image.png)
+
+use frida to inject:
+
+```frida
+android heap searrch instances android.App.AlertDialog
+android heap searrch instances android.App.Dialog
+android heap searrch instances android.wdiget.PopupWindow
+```
