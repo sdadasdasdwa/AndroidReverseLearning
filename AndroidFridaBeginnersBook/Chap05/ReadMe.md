@@ -56,7 +56,7 @@ Then you will find that some functions is invoked, like
 After testing, choose onCreate function to hook and print stack trace.
 
 ```frida
-android hooking watch class_method adnroid.APp.ALertDialog.onCreate --dump-args --dump-backtrace --dump-return
+android hooking watch class_method adnroid.App.AlertDialog.onCreate --dump-args --dump-backtrace --dump-return
 ```
 
 
