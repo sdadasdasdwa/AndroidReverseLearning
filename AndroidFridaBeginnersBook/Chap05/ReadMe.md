@@ -12,7 +12,7 @@ In Android, there are three main comman ways to implement pop-ups:
 
 To find the upgrade dialog, decompile source code and search for relevent characters, like this:
 
-![test picture](../Sceenshots/image.png)
+![test picture](../Sceenshots/image1.png)
 
 use frida to inject:
 
@@ -58,5 +58,13 @@ After testing, choose onCreate function to hook and print stack trace.
 ```frida
 android hooking watch class_method adnroid.App.AlertDialog.onCreate --dump-args --dump-backtrace --dump-return
 ```
+
+That you can find update_show function:
+
+![test picture](../Sceenshots/image2.png)
+
+## decompile
+
+
 
 
