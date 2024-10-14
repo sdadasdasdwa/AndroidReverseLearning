@@ -65,6 +65,47 @@ That you can find update_show function:
 
 ## decompile
 
+1. use apktool to decompile the app
+
+After decompiling, Locate the Smali file corresponding to the 'channel_main' class:
+
+![image3.png](../Sceenshots/image3.png)
+
+2. modify the Smali code
+
+Based on the logic, we choose to modify 'if-eqz, :cond_0' by changing 'if-eqz' to 'if-nez'
+
+Then use the following command to repackage the app.
+
+```shell
+apktool b zhibo
+```
+
+3. Sign the App
+
+We need to use 'jarsigner' or other Android-approved signing tools to re-sign the App.
+
+```shell
+keytool -genkeypair -alias abc -keyalg RSA -keystore E:\Project\ASCD\AndroidFridaBeginnersBook\Chap05\zhibo\dist\abc.keystore
+```
+
+![image4.png](../Sceenshots/image4.png)
+
+
+
+```shell
+jarsigner -verbose -keystore E:\Project\ASCD\AndroidFridaBeginnersBook\Chap05\zhibo\dist\abc.keystore -signedjar zhibo_patch.apk zhibo.apk abc
+```
+
+![image5.png](../Sceenshots/image5.png)
+
+
+4. Finally reinstall the app
+
+
+
+
+
 
 
 
