@@ -63,7 +63,7 @@ That you can find update_show function:
 
 ![test picture](../Sceenshots/image2.png)
 
-## decompile
+## practical cracking of unprotected app
 
 1. use apktool to decompile the app
 
