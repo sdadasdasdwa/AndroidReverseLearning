@@ -50,5 +50,13 @@ fastboot erase cache
 
 ![image2.png](./image2.png)
 
-## 3.
+## 3.Flashing the nethunter2020.03
+
+```shell
+adb push nethunter2020.03.zip /sdcard
+```
+
+Then reboot bootloader and use TWRP to
+
+## 4.
 
