@@ -56,7 +56,17 @@ fastboot erase cache
 adb push nethunter2020.03.zip /sdcard
 ```
 
-Then reboot bootloader and use TWRP to
+Then reboot bootloader and use TWRP to flash nethunter.
 
-## 4.
+## 4.Push the frida-server to device
+
+```shell
+adb push frida-server-12.8.0 /data/local/tmp/
+```
+
+Remenber to chmod 777 to this directory.
+
+## Summary
+
+Finally, summary the progress I have experience, hope that can help others and me.
 
