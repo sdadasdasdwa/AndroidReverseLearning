@@ -102,9 +102,11 @@ jarsigner -verbose -keystore E:\Project\ASCD\AndroidFridaBeginnersBook\Chap05\zh
 
 4. Finally reinstall the app
 
+
 ## Practical analysis and cracking of an protected app
 
 'app' : com.hello.qqc.apk
+
 
 
 
