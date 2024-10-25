@@ -16,7 +16,7 @@ To find the upgrade dialog, decompile source code and search for relevent charac
 
 use frida to inject:
 
-```frida
+```shell
 android heap searrch instances android.App.AlertDialog
 android heap searrch instances android.App.Dialog
 android heap searrch instances android.wdiget.PopupWindow
@@ -25,7 +25,7 @@ android heap searrch instances android.wdiget.PopupWindow
 Recommand an Objection plugin - Wallbreaker, which enhances Objection's 
 memory search functionality  with practical examples.
 
-```frida
+```shell
 objection -g com.hd.zhibo explore -P /plugins/
 
 plugin wallbreaker objectionsearch android.app.AlertDialog
@@ -41,13 +41,13 @@ Since the Hook has no effect if triggered after the function call, and the sampl
 upgrade prompt pops up as soon as the app enters the main page, it's necessary to ensure
 that the sample is hooked as soon as the startup function is invoked，so
 
-```frida
+```shell
 objection -g com.hd.zhibo explore -s "android hooking watch class android.App.AlertDialog"
 ```
 
 Then you will find that some functions is invoked, like
 
-```frida
+```shell
 [xxx] Called android.App.AlertDialog.resolveDialogTheme
 [xxx] Called android.App.AlertDialog.resolveDialogTheme
 [xxx] Called android.App.AlertDialog.onCreate
@@ -55,7 +55,7 @@ Then you will find that some functions is invoked, like
 
 After testing, choose onCreate function to hook and print stack trace.
 
-```frida
+```shell
 android hooking watch class_method adnroid.App.AlertDialog.onCreate --dump-args --dump-backtrace --dump-return
 ```
 
@@ -106,6 +106,34 @@ jarsigner -verbose -keystore E:\Project\ASCD\AndroidFridaBeginnersBook\Chap05\zh
 ## Practical analysis and cracking of an protected app
 
 'app' : com.hello.qqc.apk
+
+In this instance app, you find that you can't dismiss the popup by clicking outside the window.
+
+### Search Related Class
+
+Firstly, search for instances of relevant classes.
+
+```shell
+plugin wallbreaker objectsearch android.app.AlertDialog
+plugin wallbreaker objectsearch android.app.Dialog
+plugin wallbreaker objectsearch android.widget.PopupWindow
+```
+
+![image1.png](./image1.png)
+
+
+### Hook
+
+To identify the class responsible for implementing a popup by hooking each suspected popup class,
+you could follow these steps:
+
+1. Use 'watch class' way to hook related class before enter the HomePage.
+
+```shell
+android hooking watch class android.App.AlertDialog
+```
+
+
 
 
 
