@@ -22,7 +22,7 @@ android heap searrch instances android.App.Dialog
 android heap searrch instances android.wdiget.PopupWindow
 ```
 
-Recommand an Objection plugin - Wallbreaker, which enhances Objection's 
+Recommand an Objection plugin - Wallbreaker, which enhances Objection's
 memory search functionality  with practical examples.
 
 ```shell
@@ -37,7 +37,7 @@ plugin wallbreaker objectdump 0x2582
 
 But sorry, the com.hd.zhibo App has already outdate and is no longer maintained.So I can't screencap any picture.
 
-Since the Hook has no effect if triggered after the function call, and the sample app's 
+Since the Hook has no effect if triggered after the function call, and the sample app's
 upgrade prompt pops up as soon as the app enters the main page, it's necessary to ensure
 that the sample is hooked as soon as the startup function is invoked，so
 
@@ -91,17 +91,13 @@ keytool -genkeypair -alias abc -keyalg RSA -keystore E:\Project\ASCD\AndroidFrid
 
 ![image4.png](../Sceenshots/image4.png)
 
-
-
 ```shell
 jarsigner -verbose -keystore E:\Project\ASCD\AndroidFridaBeginnersBook\Chap05\zhibo\dist\abc.keystore -signedjar zhibo_patch.apk zhibo.apk abc
 ```
 
 ![image5.png](../Sceenshots/image5.png)
 
-
 4. Finally reinstall the app
-
 
 ## Practical analysis and cracking of an protected app
 
@@ -121,7 +117,6 @@ plugin wallbreaker objectsearch android.widget.PopupWindow
 
 ![image1.png](./image1.png)
 
-
 ### Hook
 
 To identify the class responsible for implementing a popup by hooking each suspected popup class,
@@ -133,13 +128,48 @@ you could follow these steps:
 android hooking watch class android.App.AlertDialog
 ```
 
+[Picture Here]
+
+The above code is not userful, no any function is invoked during the process.
+
+```shell
+android hooking watch class android.App.Dialog
+```
+
+[Picture Here]
+
+Then, you will find many functions are called, such as 'setCancelable(boolean)' function.
+
+2. Hook setCalcelable function
+
+```shell
+android hooking watch class_method android.App.Dialog.setCancelable --dump-args --dump-backtrace --dump-return
+```
+
+[Picture Here]
+
+You can see what call the andoird.App.Dialog is 'cn.net.tokyo.ccg.ui.fragment.dialog.UpdateDIalogFragment.onCreateDialog()' function.
+
+3. Unpack the app
+
+Something was different with the unprotected app.
+
+If you use Jadx to uncompile the protected app, only some class information from the external shell is visible.
+
+The only option is to unpack it, 'Dexdump' is another masterpiece by the author of Wallbreaker.
+
+The basic principle of its unpacking is to perform a brute-force search for data in memory that match the 
+DEX format to complete the dumping process.
 
 
+```shell
+git clone https://github.com/hluwa/FRIDA-DEXDump
+```
 
+we do not load plugin by adding the -P parameters and plugin path during injection,
+instead we load plugin by using plugin command in Objection REPL interface after the Objection injection.
 
-
-
-
-
-
+```shell
+plugin load /plugins/dexdump
+```
 
