@@ -128,7 +128,7 @@ you could follow these steps:
 android hooking watch class android.App.AlertDialog
 ```
 
-[Picture Here]
+![image2.png](./image2.png)
 
 The above code is not userful, no any function is invoked during the process.
 
@@ -136,7 +136,7 @@ The above code is not userful, no any function is invoked during the process.
 android hooking watch class android.App.Dialog
 ```
 
-[Picture Here]
+![image3.png](./image3.png)
 
 Then, you will find many functions are called, such as 'setCancelable(boolean)' function.
 
@@ -146,7 +146,7 @@ Then, you will find many functions are called, such as 'setCancelable(boolean)' 
 android hooking watch class_method android.App.Dialog.setCancelable --dump-args --dump-backtrace --dump-return
 ```
 
-[Picture Here]
+![image4.png](./image4.png)
 
 You can see what call the andoird.App.Dialog is 'cn.net.tokyo.ccg.ui.fragment.dialog.UpdateDIalogFragment.onCreateDialog()' function.
 
