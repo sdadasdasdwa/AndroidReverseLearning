@@ -171,5 +171,83 @@ instead we load plugin by using plugin command in Objection REPL interface after
 
 ```shell
 plugin load /plugins/dexdump
+plugin dexdump dump
 ```
+
+I tried using the plugin command in windows, but it doesn't work. So I just continue to record.
+
+All the unpacked files were saved in the specified SavePath.
+
+Use grep command to identity the dex file that stored the key class UpdateDialogFragment of the app.
+
+```shell
+grep -ril "UpdateDialogFragment" ./*.dex
+-r : recursice
+-i : ignore the case sensitivity.
+-l : list only the names of files that contain matches for the specified pattern, rather than 
+     displaying the matching lines themselves.
+```
+
+After determine the specific dex file, use Jadx open it and find 'UpdateDialogFragment' method.
+
+That method extends the DialogFragment, codes about upgrade were not performed in UpdateDialogFragment class.
+
+[Jadx decompile the dex file]
+
+To further confirm which external function is calling the class.
+
+```shell
+android hooking watch class cn.net.tokyo.ccg.ui.fragment.dialog.UpdateDialogFragment
+```
+
+[hook UpdateDialogFragment Picture]
+
+It's the cn.net.tokyo.ccg.ui.fragment.dialog.UpdateDialogFragment.b() that is calling that method.
+
+[hook UpdateDialogFragment.b() Picture]
+
+Use Jadx to locale the function.
+
+[Jadx locale a() Picture]
+
+When I see how MainActivity.a() function is calling the UpdateDialogFragment.b(). The version variable 
+determines whether the pop-up window appears, so modify the condition in this if statement.
+
+### re-pack 
+
+Since the app is protected, there are additional details to pay attention to during the repackaging process.
+
+1. When repackaging, the dex of original app after unpacking should be used to replace the original shell dex.
+
+    So when using apktool to decompile the APK, choose not to decompile the dex files and delete the shell dex.
+
+    ```shell
+    apktool d com.hello.qqc.apk -s
+    ```
+
+    -s parameter in apktool provides the function to avoid decompiling dex files in the APKs.
+
+    Delete the original classes.dex file after decompiling, then rename the dex files by file sizes in sequence as 
+    classes.dex, classes2.dex, classes3.dex, classes4.dex and so on, and store them in the directory where the shell
+    dex is located. After copying all unpacked dex files, the decompiling directory and files should appear as 
+    shown in the image.
+
+2. modify App's entry class
+
+    In Jadx file, search 'extends Application' code, locate 'cn.net.tokyo.ccg.base.App' class.
+
+    [Jadx picture]
+
+    After modifying, use apktool to recompile app.
+
+    ```shell
+    apktool b com.hello.qqc
+    ```
+
+Then resign, reinstall and execute, you will get the same app without any difference.
+
+
+
+
+
 
