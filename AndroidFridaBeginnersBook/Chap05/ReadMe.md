@@ -17,9 +17,9 @@ To find the upgrade dialog, decompile source code and search for relevent charac
 use frida to inject:
 
 ```shell
-android heap searrch instances android.App.AlertDialog
-android heap searrch instances android.App.Dialog
-android heap searrch instances android.wdiget.PopupWindow
+android heap search instances android.App.AlertDialog
+android heap search instances android.App.Dialog
+android heap search instances android.wdiget.PopupWindow
 ```
 
 Recommand an Objection plugin - Wallbreaker, which enhances Objection's
