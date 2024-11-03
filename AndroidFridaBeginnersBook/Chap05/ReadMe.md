@@ -73,7 +73,7 @@ After decompiling, Locate the Smali file corresponding to the 'channel_main' cla
 
 2. modify the Smali code
 
-Based on the logic, we choose to modify 'if-eqz, :cond_0' by changing 'if-eqz' to 'if-nez'
+Based on the logic, we choose to modify 'if-eqz p1, :cond_0' by changing 'if-eqz' to 'if-nez'
 
 Then use the following command to repackage the app.
 
