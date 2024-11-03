@@ -237,6 +237,9 @@ It's the cn.net.tokyo.ccg.ui.fragment.dialog.UpdateDialogFragment.b() that is ca
 
 Use Jadx to locale the function.
 
+> [!Note]
+> I can't find UpdateDialogFragment in class.dex files which were dump by frida-dexdump in pyhon3.
+
 [Jadx locale a() Picture]
 
 When I see how MainActivity.a() function is calling the UpdateDialogFragment.b(). The version variable 
