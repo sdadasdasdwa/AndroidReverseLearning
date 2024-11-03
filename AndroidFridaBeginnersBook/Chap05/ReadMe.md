@@ -143,7 +143,7 @@ Then, you will find many functions are called, such as 'setCancelable(boolean)' 
 2. Hook setCalcelable function
 
 ```shell
-android hooking watch class_method android.App.Dialog.setCancelable --dump-args --dump-backtrace --dump-return
+android hooking watch class_method android.app.Dialog.setCancelable --dump-args --dump-backtrace --dump-return
 ```
 
 ![image4.png](./image4.png)
@@ -174,7 +174,36 @@ plugin load /plugins/dexdump
 plugin dexdump dump
 ```
 
-I tried using the plugin command in windows, but it doesn't work. So I just continue to record.
+I tried using the plugin command in windows, but it doesn't work. So I only use it in python command.
+
+```shell
+pip3 install frida-dexdump
+```
+
+CLI arguments base on 'frida-tools', you can quickly dump the foreground application like this:
+
+```shell
+frida-dexdump -FU
+```
+
+Or specify and spawn app like this:
+
+```shell
+frida-dexdump -U -f com.app.pkgname
+```
+
+Additionally, you can see in -h that the new options provided by frida-dexdump are:
+
+```shell
+-o OUTPUT, --output OUTPUT  Output folder path, default is './<appname>/'.
+-d, --deep-search           Enable deep search mode.
+--sleep SLEEP               Waiting times for start, spawn mode default is 5s.
+```
+
+When using, I suggest using the -d, --deep-search option, which may take more time, but the results will be more complete.
+
+![image5](./image5.png)
+
 
 All the unpacked files were saved in the specified SavePath.
 
