@@ -221,7 +221,7 @@ After determine the specific dex file, use Jadx open it and find 'UpdateDialogFr
 
 That method extends the DialogFragment, codes about upgrade were not performed in UpdateDialogFragment class.
 
-[Jadx decompile the dex file]
+![image6](./image6.png)
 
 To further confirm which external function is calling the class.
 
@@ -229,11 +229,11 @@ To further confirm which external function is calling the class.
 android hooking watch class cn.net.tokyo.ccg.ui.fragment.dialog.UpdateDialogFragment
 ```
 
-[hook UpdateDialogFragment Picture]
+![image7](./image7.png)
 
 It's the cn.net.tokyo.ccg.ui.fragment.dialog.UpdateDialogFragment.b() that is calling that method.
 
-[hook UpdateDialogFragment.b() Picture]
+![image8](./image8.png)
 
 Use Jadx to locale the function.
 
