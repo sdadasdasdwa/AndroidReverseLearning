@@ -13,5 +13,17 @@ in the exercise records, and preventing message retraction for Wechat and QQ, ar
 
 ## History Version
 
-    
+    Firstly, search XposedInstaller(3.1.5 version ) on Github and install, but I merely find 
+
+its' android project file instead of direct apk file. So it costs me some time to debug project
+
+especially I undergo difficulties when install Libsuperuser dependency. It's outdated library 
+
+used for managing root permission in Android. There are three version of Libsuperuser in Maven 
+
+Repository as follows.
+
+![maven repository image of Libsuperuser](./image2.png)
+
+
 
