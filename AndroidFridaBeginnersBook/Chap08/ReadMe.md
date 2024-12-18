@@ -18,3 +18,9 @@
 
    +  application layer : HTTP/HTTPs
    +  Session layer : Socket packet
+
+## MIMT
+
+    Then it introduce how to use Charels and Burp suite to execute MIMT packet capturing. I was used to choose Fiddle-Everywhere tools.
+
+    But the way of using BS to capture sock5 packet which I really want to have a try.
