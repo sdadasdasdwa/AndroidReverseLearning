@@ -38,9 +38,57 @@ objection -g com.android.settings explore 注入
 
     ![list activities/services](./picture/image7.png) 
 
+    + android hooking watch class_method <methodname> : 对指定方法进行Hook
+    
+        ``` frida
+        eg. android hooking watch class_method java.io.File.$init --dump-args --dump-backtrace --dump-return
+        ```
+
+        ![watch class_method](./picture/image8.png) 
+
+    + android hooking watch class <classname> : 对指定类名中的所有函数的Hook
+       
+        ``` frida
+        eg. android hooking watch class java.io.File
+        ```
+
+        ![watch class](./picture/image9.png) 
 
 
+    + android heap : 主动调用在Objection中的使用
 
+        1. 基于最简单的Java.choose的实现（搜索实例）
+
+            对实例的搜索在Objection是使用以下命令实现的 : android heap search instances <classname>.
+            以java.io.File类为例，搜索到很多File实例，并且打印出对应的Handle和toString的结果。
+
+            ``` frida
+            eg. android heap search instances java.io.File
+            ```
+
+            ![android heap search instances](./picture/image10.png) 
+
+
+        2. 调用实例方法有两种。
+
+            第一种使用以下命令调用实例方法 ： android heap execute <Handler> <methodname> , 这里的实例方法指的是没有参数的实例方法。
+        
+            ```frida
+            eg. android heap execute 0x3606 getPath
+            ```
+
+            ![android heap execute](./picture/image11.png) 
+
+
+            使用execute执行带参函数会报错，如果要执行带参函数，则需要先执行以下命令：
+
+            ```frida
+            android heap evaluate <Handle>
+            ```
+
+            ![android heap evaluate](./picture/image12.png) 
+
+            heap evaluate 既可以执行有参函数，也可以执行无参函数。
 
 
 ## 反编译工具
