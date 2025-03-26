@@ -99,124 +99,104 @@ objection -g com.android.settings explore 注入
 + Jeb
 + GDA
 
-## Operation Begining
+## Objection结合Jeb分析
 
-1. Cannot connect USB?
-    Termux. A software which can perform terminal on Android device.
+1. 使用GenyMotion模拟器配置Android环境
 
-    To solve how to start frida-server without adb on PC device.
+2. 恶意App打开后，adb连接自动断开，且无法通过USB连接上
 
-    Otherwise, Objection support to use Network Connection, it can listen to Android port.
+    使用Jadx查看发现有一个USBLock相关类。类中执行setprop persist.sys.usb.config none的命令。
 
-    You can use 'netstat' command to view the port which frida-server use.
+    使用Termux软件在手机上模拟Linux环境，提供命令行界面让用户与系统进行互动。frida-server --help发现可以被网络监听
 
-    ```shell
-    netstat -tulp | grep frida
+    ```
+    objection -N(Network) -h(host) 192.xxx.xxx.xxx -p 8888 -g com.xxxx.xxxxx explore
     ```
 
-    After seeing it, use Objection command.
+    android hooking list services遍历服务初步确定是MyServiceOne.
 
-    ```frida
-    objection -N -h xxx.xxx.xxx.xxx -p 8888 -g com.example.packagename explore
-    
-    -N : Network Listen Model
+    ```
+    // 由于不确定是该类中哪一个函数，所以使用命令hook整个类
+    android hooking watch class com.xxx.xxx.MyServiceOne
     ```
 
-2. Traverse services
+    打印发现MyServiceOne.access$L 1000018函数一直被调用，通过Jeb查看其中并没有内容，于是寻找哪个位置调用该方法。
 
-    ```frida
-    android hooking list services
-    ```
-
-    The above code will iterate over services.
-
-    But we cannot see which function cause the phenomena. So we should hook the whole service class.
-3. Hook MyServiceOne Class
-
-    ```frida
-    android hooking watch class com.example.MyServiceOne
-    ```
-
-    Then you can find that MyServiceOne.access$L1000018 Method is called.
-
-    Use Jeb to find the corresponding function.
+    跟踪过去发现这个函数就是导致音量一直调到最大的原因。
 
     ```java
     public void run(){
-        ...
-        Object v1 = MyServiceOne.this.getSystemService("audio");
-        // set the max volume
-        v1.setStreamVolume(3,v1,getStreamMaxVolunme(3),4);
+        MyserviceOne.this.hand2.postDelayed(this, (long)1800);
+        Objection v1 = MyServiceOne.this.getSystemService("audio");
+        v1.setStreamVolume(3, v1.getStreamMaxVolume(3), 4);
         v1.getStreamMaxVolume(0);
-        v1.getStreamMaxVolume(0);
-        MyServiceOne.this.getApplication()
-                    .getSystemService("vibrator")
-                    .vibrate(new long[]{((long)100),((long)1500),((long)100),((long)1500),-1})
-        ...
+        v1.getStreamVolume(0);
+        MyServiceOne.this.getApplication().getSystemService("vibrate").vibrate(new long[]{100,1500,100,1500}, -1);
     }
     ```
 
-    Then you know what make the voice noise. And then we touch the unlock logic.
+3. 当单击“解除锁定”按钮后，发现又有几个函数被打印。
 
-4. UnLock Button？
+    按照“先打印出来的函数先调用”的原则，我们发现最上层的方法是MyServiceOne.xxx(java.lang.String).
 
-    when you click unlock button, you will find some functions are called.
-    Following the principle that the function printed first is called first, we will hook a method instead of the whole class methods.
-
-    ```frida
-    android hooking watch class_method com.example.MyServiceOne.xxxmethod --dump-args --dump-backtrace --dump-return
-    dump-args : print arguments
-    dump-backtrace : print heap trace
-    dump-return : print function return value
     ```
+    // 对具体的方法进行Hook
+    android hooking watch class_method com.xxx.xxx.MyServiceOne.xxx --dump-args --dump-backtrace --dump-return
+    ```
+    
+    调用栈的打印顺序与watch class命令的打印结果不同，这里调用栈下方的函数是先调用的。在这里最先调用的是MyServiceOne$10002.onClick()函数.
 
-    TIPS: the backtrace content perform that functions printed first is called last.
+    这对定位关键函数的帮助是巨大的。
 
-    Finally, we can summarized that use Objection can help us localize the important code.
+## frida开发思想
 
-## frida development philosophy
+1. Objection辅助定位
 
-1. Objection Assisted localization
-
-    ```frida
-    // list activities
+    ```
+    // 列出活动
     android hooking list activities
 
-    // install and traverse all activity later start corresponding activity
+    // 选择分析的目标activity为计算器的相关活动com.example.junior.CaluculatorActivity,尝试启动该活动类
     android intent launch activity com.example.CaculatorActivity
 
-    // verify if the function exists
+    // 列出类中的方法，验证函数是否存在
     android hooking list class_methods com.example.CalculatorActivity
 
-    // hook the method
-    android hooking watch class method com.example.CalculatorActivity.caculate --dump-args --dump-backtrace --dump-return
+    // hook方法
+    android hooking watch class_method com.example.CalculatorActivity.caculate --dump-args --dump-backtrace --dump-return
     ```
 
-    We can see the origin code and find that the calculate function use the sub function of Arith class.
+    在这个函数源码中，对减法的处理是通过Arith.sub()函数来实现的，为了验证Arith类在函数中是否存在，遍历所有类.
 
-    To verify whether the sub function is called, we try to test.
-
-    First, iterate the class.
-
-    ```frida
+    ```
     android hooking list classes
     ```
 
-    Tips: Before running the objection to inject App, checkout to `~/.objection` directory
+    Tips: 这行命令列出的很多类，甚至可能超过整个Terminal缓存空间, 检查 `~/.objection` 目录并清空objection.log文件后重新注入。
 
-    clear the old `objection.log`. After that, re-inject App and run the traverse code.
-
-    Finally you will find Arith Class in the memory.
-
-    Second, hook the sub function.
-
-    ```frida
+    ```
     android hooking watch class_method com.example.xxx.sub --dump-args --dump-backtrace --dump--return
     ```
 
-    you will find the sub function overloads.
+    ```shell
+    // 查看内存中是否存在目标类Arith
+    cat objection.log | grep com.example.junior.util.Arith
+    ```
 
-    Third, use firda scripts to modify parameters and actively invoke.
+    ```
+    // 列出Arith类中的方法
+    android hooking list class_methods com.example.junior.util.Arith 
+    ```
+
+    在内存中确定Arith类存在后，使用如下命令对这个函数进行Hook：
+
+    ```
+    android hooking watch class_method com.example.junior.util.Arith.sub --dump-args --dump-backtrace --dump-return
+    ```
+
+    最终确认该简单计算器是通过sub(java.lang.String, java.lang.String)实现的。
+
+    利用Frida脚本修改参数，主动调用
 
     ```frida
     function main(){
@@ -225,6 +205,7 @@ objection -g com.android.settings explore 注入
             Arith.sub.overload('java.lang.String','java.lang.String').implementation = function(str,str2){
                 var result = this.sub(str,str2)
                 console.log('result=>',result)
+                // 打印函数调用堆栈
                 console.log(Java.use("android.util.log")
                             .getStackTraceString(Java.use("java.lang.Trowable))
                             .$new()))
@@ -233,3 +214,36 @@ objection -g com.android.settings explore 注入
         })
     }
     ```
+
+    在使用Frida注入app前需要取消objection的Hook.
+
+    注入示例代码如下：
+
+    ```frida
+    function main(){
+        Java.perform(function(){
+            var Arith = Java.use("com.example.xxx.Arith)
+            Arith.sub.overload('java.lang.String','java.lang.String').implementation = function(str,str2){
+                var result = this.sub(str,"123")
+                console.log('result=>',result)
+                // 打印函数调用堆栈
+                console.log(Java.use("android.util.log")
+                            .getStackTraceString(Java.use("java.lang.Trowable))
+                            .$new()))
+                return result
+            }
+        })
+    }
+    ```
+
+    直接传参实际上不对，应该如下：
+
+    ```
+    var JavaString = Java.use('java.lang.String');
+    var result = this.sub(str,JavaString.$new('123))
+    ```
+
+    
+
+
+
