@@ -157,7 +157,7 @@ objection -g com.android.settings explore 注入
     android hooking list activities
 
     // 选择分析的目标activity为计算器的相关活动com.example.junior.CaluculatorActivity,尝试启动该活动类
-    android intent launch activity com.example.CaculatorActivity
+    android intent launch_activity com.example.CaculatorActivity
 
     // 列出类中的方法，验证函数是否存在
     android hooking list class_methods com.example.CalculatorActivity

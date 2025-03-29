@@ -1,13 +1,13 @@
-/*
-function callSub(){
-    Java.perform(function(){
-        var Arith = Java.use('com.example.junior.util.Arith')
-        var JavaString = Java.use('java.lang.String')
-        var result  = Arith.sub(JavaString.$new("123"),JavaString.$new("111"))
-        console.log("123 - 111 =",result)
-    })
-}
-*/
+// function callSub(){
+//     Java.perform(function(){
+//         var Arith = Java.use('com.example.junior.util.Arith')
+//         var JavaString = Java.use('java.lang.String')
+//         var result  = Arith.sub(JavaString.$new("123"),JavaString.$new("111"))
+//         console.log("123 - 111 =",result)
+//     })
+// }
+// setImmediate(callSub())
+
 rpc.exports = {
     sub: function CallSub(a,b){
         Java.perform(function(){
@@ -19,3 +19,4 @@ rpc.exports = {
         
     }
 }
+
