@@ -63,7 +63,7 @@ private String total = "hello"
 .field private total:xx/xx/String
 ```
 
-### 函数
+### 变量
 
 ```
 .method <访问权限> [修饰关键字] <方法原型>
@@ -74,19 +74,21 @@ private String total = "hello"
 .end method
 ```
 
-## Practical analysis and cracking of an unprotected app
+## 对未加固App进行分析和破解实战
 
-In Android, there are three main comman ways to implement pop-ups:
+介绍去除一个未加固App的升级提示弹窗，主要有三种弹窗类型。
 
-1. android.App.Dialog
-2. android.App.AlertDialog
-3. android.widget.PopupWindow
+```
+android.App.Dialog
+android.App.AlertDialog
+android.widget.PopupWindow
+```
 
-To find the upgrade dialog, decompile source code and search for relevent characters, like this:
+为了找到升级弹窗是哪种类型，反编译源码和寻找相关的代码。
 
-![test picture](../Sceenshots/image1.png)
+![zhibo.apk upgrade picture](./picture/image.png)
 
-use frida to inject:
+用frida去注入试试：
 
 ```shell
 android heap search instances android.App.AlertDialog
@@ -94,11 +96,12 @@ android heap search instances android.App.Dialog
 android heap search instances android.wdiget.PopupWindow
 ```
 
-Recommand an Objection plugin - Wallbreaker, which enhances Objection's
-memory search functionality  with practical examples.
+比起用frida中的heap search来寻找内存实例，推荐使用Wallbreaker，
+不仅实现了内存搜索功能，还能通过类实例打印相印的内容。
 
 ```shell
-objection -g com.hd.zhibo explore -P /plugins/
+# use in windows
+objection -g com.hd.zhibo explore -P ./plugins/
 
 plugin wallbreaker objectionsearch android.app.AlertDialog
 # print: [0x2582] xxx
@@ -107,79 +110,71 @@ plugin wallbreaker objectdump 0x2582
 # The text content displayed in the upgrade prompt pop-up.
 ```
 
-But sorry, the com.hd.zhibo App has already outdate and is no longer maintained.So I can't screencap any picture.
+由于zhibo.apk的服务器地址已经失效，出现不了升级弹窗。
 
-Since the Hook has no effect if triggered after the function call, and the sample app's
-upgrade prompt pops up as soon as the app enters the main page, it's necessary to ensure
-that the sample is hooked as soon as the startup function is invoked，so
+因为如果在函数调用之后才触发 Hook 是无效的，而示例 App 的升级弹窗会在进入主页面后立刻弹出，所以必须确保在启动函数一被调用时就进行 Hook。
 
 ```shell
-objection -g com.hd.zhibo explore -s "android hooking watch class android.App.AlertDialog"
+objection -g com.hd.zhibo explore -s "android hooking watch class android.app.AlertDialog"
 ```
 
 Then you will find that some functions is invoked, like
 
-```shell
-[xxx] Called android.App.AlertDialog.resolveDialogTheme
-[xxx] Called android.App.AlertDialog.resolveDialogTheme
-[xxx] Called android.App.AlertDialog.onCreate
-```
+![应用启动前便被Hook](./picture/image01.png)
 
-After testing, choose onCreate function to hook and print stack trace.
+在测试时选择onCreate函数去Hook并且打印堆栈。
 
 ```shell
-android hooking watch class_method adnroid.App.AlertDialog.onCreate --dump-args --dump-backtrace --dump-return
+android hooking watch class_method android.app.AlertDialog.onCreate --dump-args --dump-backtrace --dump-return
 ```
 
-That you can find update_show function:
+你可以找到升级显示函数，接下来通过修改Smali汇编代码。
 
-![test picture](../Sceenshots/image2.png)
+1. 用apktool工具反编译app
 
-## practical cracking of unprotected app
+在反编译后， 找到channel_main类对应的Smali文件及update_show()函数在文件中的位置：
 
-1. use apktool to decompile the app
+![channel_main的smali代码](./picture/image02.png)
 
-After decompiling, Locate the Smali file corresponding to the 'channel_main' class:
+2. 修改Smali代码
 
-![image3.png](../Sceenshots/image3.png)
+修改'if-eqz p1, :cond_0'为'if-nez'。
 
-2. modify the Smali code
-
-Based on the logic, we choose to modify 'if-eqz p1, :cond_0' by changing 'if-eqz' to 'if-nez'
-
-Then use the following command to repackage the app.
+用下列命令来重打包修改过的apk。
 
 ```shell
 apktool b zhibo
 ```
 
-3. Sign the App
+![重新打包zhibo.apk](./picture/image03.png)
 
-We need to use 'jarsigner' or other Android-approved signing tools to re-sign the App.
+1. 签名App
+
+我们需要使用jarsigner或者其他Android认可的签名工具生成一个签名文件，使用其对打包好的apk进行签名。
 
 ```shell
 keytool -genkeypair -alias abc -keyalg RSA -keystore E:\Project\ASCD\AndroidFridaBeginnersBook\Chap05\zhibo\dist\abc.keystore
 ```
 
-![image4.png](../Sceenshots/image4.png)
+![生成一个新的 Java 密钥对（公钥 + 私钥）并保存到一个 keystore 文件中](./picture/image04.png)
 
 ```shell
 jarsigner -verbose -keystore E:\Project\ASCD\AndroidFridaBeginnersBook\Chap05\zhibo\dist\abc.keystore -signedjar zhibo_patch.apk zhibo.apk abc
 ```
 
-![image5.png](../Sceenshots/image5.png)
+![对apk文件进行签名](./picture/image05.png)
 
-4. Finally reinstall the app
+4. 最后重新下载apk
 
-## Practical analysis and cracking of an protected app
+## 对加固App进行逆行分析和破解的实战
 
 'app' : com.hello.qqc.apk
 
-In this instance app, you find that you can't dismiss the popup by clicking outside the window.
+上个案例App在手动跳过欢迎页后会弹出升级提示弹窗，该案例不管如何点击窗口外部的位置都无法消除弹窗。
 
-### Search Related Class
+### 搜索关键类
 
-Firstly, search for instances of relevant classes.
+与上个案例类似，在弹窗出现在内存中后搜索相关类的实例。
 
 ```shell
 plugin wallbreaker objectsearch android.app.AlertDialog
