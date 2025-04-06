@@ -1,49 +1,49 @@
-# Chapter5 App攻防博弈过程
+# Chapter5 App 攻防博弈过程
 
-通过两个简单App来演示App攻防的博弈过程。
+通过两个简单 App 来演示 App 攻防的博弈过程。
 
-## 5.1 App攻防技术演进
+## 5.1 App 攻防技术演进
 
-APK文件通过zip被解压缩后会发现多了一个class.dex文件，这个正是Android系统虚拟机的可执行文件。
+APK 文件通过 zip 被解压缩后会发现多了一个 class.dex 文件，这个正是 Android 系统虚拟机的可执行文件。
 
-resources.arsc文件，该文件是用于资源文件相关信息的文件。
+resources.arsc 文件，该文件是用于资源文件相关信息的文件。
 
-META-INF文件夹主要用于存储签名文件的。
+META-INF 文件夹主要用于存储签名文件的。
 
-当我们试图像打开源码那样打开解压后App的各类文件，会发现乱码，那是因为APK文件虽然是压缩包的格式，但是内部的每个文件都被编译为二进制了。
+当我们试图像打开源码那样打开解压后 App 的各类文件，会发现乱码，那是因为 APK 文件虽然是压缩包的格式，但是内部的每个文件都被编译为二进制了。
 
-Smail语言可以看作是Android虚拟机的汇编语言。
+Smail 语言可以看作是 Android 虚拟机的汇编语言。
 
-攻 : 2010年，Android病毒与ApkTool反编译神器同年出现。Jadx和Jeb是基于apkTool进一步优化的成果。
+攻 : 2010 年，Android 病毒与 ApkTool 反编译神器同年出现。Jadx 和 Jeb 是基于 apkTool 进一步优化的成果。
 
-攻 : 为了应对apkTool反编译没有保护的app，方式是代码混淆比如Google自带的ProGuard混淆器。
+攻 : 为了应对 apkTool 反编译没有保护的 app，方式是代码混淆比如 Google 自带的 ProGuard 混淆器。
 
 防 : 随后是动态加载方案，将需要进行保护的代码单独编译成一个二进制文件，将其加密后放到外部的二进制文件中。
-在外部程序运行的过程中，再将被保护的二进制代码解密并使用ClassLoader加载到内存中。还有的甚至是把重要功能和数据放在云端，App只做展示数据功能。
+在外部程序运行的过程中，再将被保护的二进制代码解密并使用 ClassLoader 加载到内存中。还有的甚至是把重要功能和数据放在云端，App 只做展示数据功能。
 
-攻 : 动态分析通过附加调试或者注入进程来进行分析比如Hook或trace。
+攻 : 动态分析通过附加调试或者注入进程来进行分析比如 Hook 或 trace。
 
-防 ：针对动态分析方法有两种方法：运行时检测和事先阻止。demo02进程PID在被附加时会变成android_server64的进程PID。
-通过判断系统进程是否存在Server相关的进程名进行检测；针对调试器通过指令执行时间差进行检测；事先预防双进程保护。
+防 ：针对动态分析方法有两种方法：运行时检测和事先阻止。demo02 进程 PID 在被附加时会变成 android_server64 的进程 PID。
+通过判断系统进程是否存在 Server 相关的进程名进行检测；针对调试器通过指令执行时间差进行检测；事先预防双进程保护。
 
-防 ：App加固，用加固厂商的壳程序包裹真实的App，在真实运行时再通过壳程序执行释放真正App。
-加固总结为3个阶段：DEX整体加固、代码抽取保护、将Java代码变成最终的Native层代码。
+防 ：App 加固，用加固厂商的壳程序包裹真实的 App，在真实运行时再通过壳程序执行释放真正 App。
+加固总结为 3 个阶段：DEX 整体加固、代码抽取保护、将 Java 代码变成最终的 Native 层代码。
 
-防 ：进一步保护native代码，LLVM是一套开源的编译器，OLLVM是专门为混淆而生的LLVM。
+防 ：进一步保护 native 代码，LLVM 是一套开源的编译器，OLLVM 是专门为混淆而生的 LLVM。
 
-## 5.2 Smail语言介绍
+## 5.2 Smail 语言介绍
 
-| Smail数据类型  | Java中数据类型 |
-| --------------| ------------- |
-|      B        |      byte     |
-|      S        |      short    |
-|      I        |      int      |
-|      J        |      long     |
-|      F        |      float    |
-|      D        |      double   |
-|      Z        |      boolean  |
-|      C        |      char     |
-|      V        |      void     |
+| Smail 数据类型 | Java 中数据类型 |
+| -------------- | --------------- |
+| B              | byte            |
+| S              | short           |
+| I              | int             |
+| J              | long            |
+| F              | float           |
+| D              | double          |
+| Z              | boolean         |
+| C              | char            |
+| V              | void            |
 
 ### 类名
 
@@ -74,9 +74,9 @@ private String total = "hello"
 .end method
 ```
 
-## 对未加固App进行分析和破解实战
+## 对未加固 App 进行分析和破解实战
 
-介绍去除一个未加固App的升级提示弹窗，主要有三种弹窗类型。
+介绍去除一个未加固 App 的升级提示弹窗，主要有三种弹窗类型。
 
 ```
 android.App.Dialog
@@ -88,7 +88,7 @@ android.widget.PopupWindow
 
 ![zhibo.apk upgrade picture](./picture/image.png)
 
-用frida去注入试试：
+用 frida 去注入试试：
 
 ```shell
 android heap search instances android.App.AlertDialog
@@ -96,7 +96,7 @@ android heap search instances android.App.Dialog
 android heap search instances android.wdiget.PopupWindow
 ```
 
-比起用frida中的heap search来寻找内存实例，推荐使用Wallbreaker，
+比起用 frida 中的 heap search 来寻找内存实例，推荐使用 Wallbreaker，
 不仅实现了内存搜索功能，还能通过类实例打印相印的内容。
 
 ```shell
@@ -110,7 +110,7 @@ plugin wallbreaker objectdump 0x2582
 # The text content displayed in the upgrade prompt pop-up.
 ```
 
-由于zhibo.apk的服务器地址已经失效，出现不了升级弹窗。
+由于 zhibo.apk 的服务器地址已经失效，出现不了升级弹窗。
 
 因为如果在函数调用之后才触发 Hook 是无效的，而示例 App 的升级弹窗会在进入主页面后立刻弹出，所以必须确保在启动函数一被调用时就进行 Hook。
 
@@ -122,25 +122,25 @@ Then you will find that some functions is invoked, like
 
 ![应用启动前便被Hook](./picture/image01.png)
 
-在测试时选择onCreate函数去Hook并且打印堆栈。
+在测试时选择 onCreate 函数去 Hook 并且打印堆栈。
 
 ```shell
 android hooking watch class_method android.app.AlertDialog.onCreate --dump-args --dump-backtrace --dump-return
 ```
 
-你可以找到升级显示函数，接下来通过修改Smali汇编代码。
+你可以找到升级显示函数，接下来通过修改 Smali 汇编代码。
 
-1. 用apktool工具反编译app
+1. 用 apktool 工具反编译 app
 
-在反编译后， 找到channel_main类对应的Smali文件及update_show()函数在文件中的位置：
+在反编译后， 找到 channel_main 类对应的 Smali 文件及 update_show()函数在文件中的位置：
 
 ![channel_main的smali代码](./picture/image02.png)
 
-2. 修改Smali代码
+2. 修改 Smali 代码
 
 修改'if-eqz p1, :cond_0'为'if-nez'。
 
-用下列命令来重打包修改过的apk。
+用下列命令来重打包修改过的 apk。
 
 ```shell
 apktool b zhibo
@@ -148,9 +148,9 @@ apktool b zhibo
 
 ![重新打包zhibo.apk](./picture/image03.png)
 
-1. 签名App
+1. 签名 App
 
-我们需要使用jarsigner或者其他Android认可的签名工具生成一个签名文件，使用其对打包好的apk进行签名。
+我们需要使用 jarsigner 或者其他 Android 认可的签名工具生成一个签名文件，使用其对打包好的 apk 进行签名。
 
 ```shell
 keytool -genkeypair -alias abc -keyalg RSA -keystore E:\Project\ASCD\AndroidFridaBeginnersBook\Chap05\zhibo\dist\abc.keystore
@@ -164,13 +164,13 @@ jarsigner -verbose -keystore E:\Project\ASCD\AndroidFridaBeginnersBook\Chap05\zh
 
 ![对apk文件进行签名](./picture/image05.png)
 
-4. 最后重新下载apk
+4. 最后重新下载 apk
 
-## 对加固App进行逆行分析和破解的实战
+## 对加固 App 进行逆行分析和破解的实战
 
 'app' : com.hello.qqc.apk
 
-上个案例App在手动跳过欢迎页后会弹出升级提示弹窗，该案例不管如何点击窗口外部的位置都无法消除弹窗。
+上个案例 App 在手动跳过欢迎页后会弹出升级提示弹窗，该案例不管如何点击窗口外部的位置都无法消除弹窗。
 
 ### 搜索关键类
 
@@ -182,171 +182,200 @@ plugin wallbreaker objectsearch android.app.Dialog
 plugin wallbreaker objectsearch android.widget.PopupWindow
 ```
 
-![image1.png](./image1.png)
+![搜索到的相关弹窗类实例](./picture/image05.png)
 
-### Hook
+### Hook 注入
 
-To identify the class responsible for implementing a popup by hooking each suspected popup class,
-you could follow these steps:
+进一步验证值得怀疑的类的注入：
 
-1. Use 'watch class' way to hook related class before enter the HomePage.
+1. 在主页面未进入时分别使用 watch class 的方式 Hook 相关类，然后根据被调用的记录判定是否使用了相关类。
 
 ```shell
 android hooking watch class android.App.AlertDialog
-```
-
-![image2.png](./image2.png)
-
-The above code is not userful, no any function is invoked during the process.
-
-```shell
 android hooking watch class android.App.Dialog
+android hooking watch class android.widget.PopupWindow
 ```
 
-![image3.png](./image3.png)
+你会发现会有很多函数被调用的情况，例如 setCancelable(boolean)函数
 
-Then, you will find many functions are called, such as 'setCancelable(boolean)' function.
-
-2. Hook setCalcelable function
+1. Hook 钩住 setCalcelable 函数
 
 ```shell
 android hooking watch class_method android.app.Dialog.setCancelable --dump-args --dump-backtrace --dump-return
 ```
 
-![image4.png](./image4.png)
+![Hook弹窗类的setCancelable方法](./picture/image07.png)
 
-You can see what call the andoird.App.Dialog is 'cn.net.tokyo.ccg.ui.fragment.dialog.UpdateDIalogFragment.onCreateDialog()' function.
+你可以看到'cn.net.tokyo.ccg.ui.fragment.dialog.UpdateDIalogFragment.onCreateDialog()'函数。
 
-3. Unpack the app
+3. 重打包
 
-Something was different with the unprotected app.
-
-If you use Jadx to uncompile the protected app, only some class information from the external shell is visible.
-
-The only option is to unpack it, 'Dexdump' is another masterpiece by the author of Wallbreaker.
-
-The basic principle of its unpacking is to perform a brute-force search for data in memory that match the 
-DEX format to complete the dumping process.
-
+为了消除弹窗，还是应该采取重打包的方式进行。与非加固 app 不同，如果使用 Jadx 直接打开 apk 文件，
+那么最终只能看到外部壳的一些信息。如何得到真是 App 的 dex 呢？脱壳是唯一选择。
 
 ```shell
 git clone https://github.com/hluwa/FRIDA-DEXDump
+# 上面地址项目不起作用，推荐用下面地址
+git clone https://github.com/kenny67/AndroidReverseEngineering.git
 ```
 
-we do not load plugin by adding the -P parameters and plugin path during injection,
-instead we load plugin by using plugin command in Objection REPL interface after the Objection injection.
+我们不是通过在注入时添加 -P 参数和插件路径来加载插件，
+而是在 Objection 成功注入后，通过 Objection 的 REPL 界面使用 plugin 命令来加载插件。
 
 ```shell
+# 加载插件
 plugin load /plugins/dexdump
+# 脱壳
 plugin dexdump dump
 ```
 
-I tried using the plugin command in windows, but it doesn't work. So I only use it in python command.
+![objection注入后加载dexdump插件](./picture/image08.png)
 
-```shell
-pip3 install frida-dexdump
-```
-
-CLI arguments base on 'frida-tools', you can quickly dump the foreground application like this:
-
-```shell
-frida-dexdump -FU
-```
-
-Or specify and spawn app like this:
-
-```shell
-frida-dexdump -U -f com.app.pkgname
-```
-
-Additionally, you can see in -h that the new options provided by frida-dexdump are:
-
-```shell
--o OUTPUT, --output OUTPUT  Output folder path, default is './<appname>/'.
--d, --deep-search           Enable deep search mode.
---sleep SLEEP               Waiting times for start, spawn mode default is 5s.
-```
-
-When using, I suggest using the -d, --deep-search option, which may take more time, but the results will be more complete.
-
-![image5](./image5.png)
-
-
-All the unpacked files were saved in the specified SavePath.
+注意查看图中的 dex 文件保存路径，确认 UpdateDialogFragment 类在哪一个 dex 文件中。
 
 Use grep command to identity the dex file that stored the key class UpdateDialogFragment of the app.
 
 ```shell
+# linux
 grep -ril "UpdateDialogFragment" ./*.dex
--r : recursice
--i : ignore the case sensitivity.
--l : list only the names of files that contain matches for the specified pattern, rather than 
-     displaying the matching lines themselves.
+-r : 嵌套子目录
+-i : 忽略大小写
+-l : 仅列出包含指定模式匹配的文件名，而不是显示匹配行本身。
+
+# windows
+for /r D:\MyFolder %i in (*.dex) do findstr /i /c:"UpdateDialogFragment" "%i" && echo === Found in: %i
 ```
 
-After determine the specific dex file, use Jadx open it and find 'UpdateDialogFragment' method.
+![搜索dex文件](./picture/image09.png)
 
-That method extends the DialogFragment, codes about upgrade were not performed in UpdateDialogFragment class.
+确定具体的 dex 文件后，使用 Jadx 打开该文件并找到 “UpdateDialogFragment ”方法。
 
-![image6](./image6.png)
+该方法是 DialogFragment 的扩展，有关升级的代码没有在 UpdateDialogFragment 类中显示。
 
-To further confirm which external function is calling the class.
+![DialogFragment反编译代码](./picture/image10.png)
+
+还需要进一步确认是哪里调用该 Dialog 的显示。
 
 ```shell
 android hooking watch class cn.net.tokyo.ccg.ui.fragment.dialog.UpdateDialogFragment
 ```
 
-![image7](./image7.png)
+![对UpdateDialogFragment类的所有函数进行Hook](./picture/image11.png)
 
-It's the cn.net.tokyo.ccg.ui.fragment.dialog.UpdateDialogFragment.b() that is calling that method.
+发现'cn.net.tokyo.ccg.ui.fragment.dialog.UpdateDialogFragment.b' 函数被最先调用。
 
-![image8](./image8.png)
+确定目标函数后，针对'cn.net.tokyo.ccg.ui.fragment.dialog.UpdateDialogFragment.b'函数重新进行 Hook。
 
-Use Jadx to locale the function.
+```shell
+android hooking watch class_method cn.net.tokyo.ccg.ui.fragment.dialog.UpdateDialogFragment.b --dump-args --dump-backtrace --dump-return
+```
 
-> [!Note]
-> I can't find UpdateDialogFragment in class.dex files which were dump by frida-dexdump in pyhon3.
+![对b方法进行Hook](./picture/image12.png)
 
-[Jadx locale a() Picture]
+发现'cn.net.tokyo.ccg.ui.activity.MainActivity.a(Unknown Source:6)'在调用它。
 
-When I see how MainActivity.a() function is calling the UpdateDialogFragment.b(). The version variable 
-determines whether the pop-up window appears, so modify the condition in this if statement.
+使用 Jadx 定位到这个函数。
 
-### re-pack 
+![定位MainActivity.a](./picture/image13.png)
 
-Since the app is protected, there are additional details to pay attention to during the repackaging process.
+为什么原本是 a()，在 Jadx 中变成 mo1353a()?
 
-1. When repackaging, the dex of original app after unpacking should be used to replace the original shell dex.
+Jadx 遇到混淆的方法名（比如 a()），为了避免同类中多个重名的 a() 方法，它会自动重命名为：
 
-    So when using apktool to decompile the APK, choose not to decompile the dex files and delete the shell dex.
+```shell
+#  这个是它的命名规则（m = method, o = obfuscated）
+mo[索引值]a
+```
 
-    ```shell
-    apktool d com.hello.qqc.apk -s
-    ```
+version 变量决定了弹窗的出现与否，可以修改这个 if 判断语句的条件。
 
-    -s parameter in apktool provides the function to avoid decompiling dex files in the APKs.
+现在的目标是：修改 dump 出的 dex 中某个函数的逻辑，然后重新打包并运行这个 App。
 
-    Delete the original classes.dex file after decompiling, then rename the dex files by file sizes in sequence as 
-    classes.dex, classes2.dex, classes3.dex, classes4.dex and so on, and store them in the directory where the shell
-    dex is located. After copying all unpacked dex files, the decompiling directory and files should appear as 
-    shown in the image.
+#### 步骤 1：用 baksmali 把 dex 反编译成 smali
 
-2. modify App's entry class
+你可以从 GitHub 上下载 baksmali，也可以直接使用命令行，生成的可执行文件在 build/libs 目录下:
+```shell
+git clone https://github.com/JesusFreke/smali.git
+cd smali
+./gradlew build
+```
 
-    In Jadx file, search 'extends Application' code, locate 'cn.net.tokyo.ccg.base.App' class.
+![定位MainActivity.a](./picture/image15.png)
 
-    [Jadx picture]
 
-    After modifying, use apktool to recompile app.
+成功构建出了 baksmali 工具，你最常用的是这个: baksmali-2.5.2-2771eae0-dirty.jar
 
-    ```shell
-    apktool b com.hello.qqc
-    ```
+执行以下命令，将 .dex 文件反编译成 smali 代码：
+
+```shell
+baksmali disassemble your.dex -o smali_out/
+```
+
+假设你有个 classes.dex，运行命令如下：
+
+```shell
+java -jar baksmali-2.5.2-2771eae0-dirty-fat.jar d E:\Project\ASCD\AndroidReverseLearning\com.hello.qqc\0xca35a024.dex -o out_smali_test1
+```
+
+![使用baksmali反编译dex文件](./picture/image16.png)
+
+#### 步骤 2：编辑 .smali 文件，修改目标函数
+
+得到的 smali_out/ 中会有完整的 smali 文件结构，比如 smali_out/com/xxx/abc/MainActivity.smali
+
+找到'cn.net.tokyo.ccg.ui.activity.MainActivity.a(Unknown Source:6)'对应的smali代码。
+
+![MainActivity.a的smali代码](./picture/image17.png)
+
+修改if-eqz为if-nez:
+
+![修改MainActivity.a的smali代码的判断条件](./picture/image18.png)
+
+修改了 smali 代码后，你可以用 smali 工具将它重新编译成 .dex 文件：
+
+```shell
+smali assemble output_folder/ -o new.dex
+```
+
+```shell
+java -jar smali-2.5.2-2771eae0-dirty-fat.jar assemble E:\SoftWare\Android_tools\smali\baksmali\build\libs\out_smali_test1 -o out_smali_test1.dex
+``` 
+
+![smali重新将smali文件夹编译成dex文件](./picture/image19.png)
+
+生成的文件如下：
+
+![查看重新编译生成的dex文件](./picture/image20.png)
+
+### 对加固 App 重打包
+
+由于该 App 是加固的，因此在重打包过程中还有一些需要注意的地方：
+
+1. 重打包时应该使用脱壳后原始 App 的 dex 替换掉原来的壳 dex。
+
+2. App 在加固后的入口点变成了壳的入口点，因此在重打包之后还需要修改 AndroidManifest 的入口类。
+
+为了解决第一个问题，需要在使用 apktool 反编译 APK 时选择不反编译 dex 文件并删除壳的 dex，
+而 apktool 的-s 参数就提供了不反编译 APK 中 dex 文件的功能，apktool 的反编译结果如下：
+
+```shell
+apktool d com.hello.qqc.apk -s
+```
+
+![apktool不反编译apk的dex文件](./picture/image14.png)
+
+反编译完成后，删除原始 classes.dex 并将脱壳后的 dex 文件
+
+1. modify App's entry class
+
+   In Jadx file, search 'extends Application' code, locate 'cn.net.tokyo.ccg.base.App' class.
+
+   [Jadx picture]
+
+   After modifying, use apktool to recompile app.
+
+   ```shell
+   apktool b com.hello.qqc
+   ```
 
 Then resign, reinstall and execute, you will get the same app without any difference.
-
-
-
-
-
-
