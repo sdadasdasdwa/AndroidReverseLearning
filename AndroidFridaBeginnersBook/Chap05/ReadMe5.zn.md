@@ -364,18 +364,43 @@ apktool d com.hello.qqc.apk -s
 
 ![apktool不反编译apk的dex文件](./picture/image14.png)
 
-反编译完成后，删除原始 classes.dex 并将脱壳后的 dex 文件
+反编译文件结果如图所示：
 
-1. modify App's entry class
+![反编译文件展示](./picture/image21.png)
 
-   In Jadx file, search 'extends Application' code, locate 'cn.net.tokyo.ccg.base.App' class.
+反编译完成后，删除原始 classes.dex 并将脱壳后的 dex 文件并将脱壳后的dex文件按照文件大小依次
+命名为classes.dex、classes2.dex、classes3.dex、classes4.dex，并存储到壳的dex所在的目录。复制完所有
+脱壳后dex的反编译目录和文件如图所示：
 
-   [Jadx picture]
+![复制完所有脱壳后dex的反编译目录和文件](./picture/image22.png)
 
-   After modifying, use apktool to recompile app.
+在完成上述操作后，第一个问题就解决了。此时还需要解决第二个问题——修改App入口类。
 
-   ```shell
-   apktool b com.hello.qqc
-   ```
+为此，在Jadx中重新打开包含关键类的dex文件，并搜索extends Application的代码：
 
-Then resign, reinstall and execute, you will get the same app without any difference.
+![搜索extends Application](./picture/image23.png)
+
+定位到'cn.net.tokyo.ccg.base.App'后，将反编译结果目录下AndroidManifest.xml清单文件中
+<Application>节点中android:name对应的值修改为找到的完整类名，AndroidManifest文件中的部分内容如图所示：
+
+![修改AndroidManifest.xml文件的入口类](./picture/image24.png)
+
+修改完成后，可以使用如下命令对apktool反编译的结果目录重新进行编译。
+
+```shell
+apktool b com.hello.qqc
+```
+
+![打包命令执行](./picture/image25.png)
+
+重新编译的apk文件会存放在com.hello.qqc/dist目录下，如下图所示：
+
+![dist目录下的apk文件](./picture/image26.png)
+
+对apk文件进行重签名：
+
+![重签名apk文件](./picture/image27.png)
+
+
+
+
