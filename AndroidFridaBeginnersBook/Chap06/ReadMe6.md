@@ -24,11 +24,11 @@ used for managing root permission in Android. There are three version of Libsupe
 
 Repository as follows.
 
-![maven repository image of Libsuperuser](./image2.png)
+![maven repository image of Libsuperuser](./picture/image2.png)
 
 Finally, I fail to intall Xposed on APK.
 
-![Xposed error image](./xposed.png)
+![Xposed error image](./picture/xposed.png)
 
 ## Plugin Development
 
