@@ -191,8 +191,8 @@ plugin wallbreaker objectsearch android.widget.PopupWindow
 1. 在主页面未进入时分别使用 watch class 的方式 Hook 相关类，然后根据被调用的记录判定是否使用了相关类。
 
 ```shell
-android hooking watch class android.App.AlertDialog
-android hooking watch class android.App.Dialog
+android hooking watch class android.app.AlertDialog
+android hooking watch class android.app.Dialog
 android hooking watch class android.widget.PopupWindow
 ```
 
@@ -400,6 +400,11 @@ apktool b com.hello.qqc
 对apk文件进行重签名：
 
 ![重签名apk文件](./picture/image27.png)
+
+# 总结
+
+跟着一步步流程走下来，我最大的感受是，我从看山是山到看山不是山再回到看山还是山的境地，我的认知
+是螺旋缓慢式上升，看(书)是必要的，跟着做也更加重要，要知识与行动合一。
 
 
 
