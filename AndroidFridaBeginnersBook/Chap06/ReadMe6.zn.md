@@ -1,6 +1,6 @@
 # Chapter6
 
-介绍Xposed框架。
+介绍 Xposed 框架。
 
 ## 介绍
 
@@ -12,33 +12,33 @@
 
 ## 历史版本
 
-Xposed最后的发行版是v89，发行时间是2017年12月18日.
+Xposed 最后的发行版是 v89，发行时间是 2017 年 12 月 18 日.
 
 ![Xposed最后也是最新的一个版本](./picture/image1.png)
 
-查看相应代码提交记录，这个版本是配的是Nougat代号的Android.
+查看相应代码提交记录，这个版本是配的是 Nougat 代号的 Android.
 
 ![Xposed最新版本适配Nougat](./picture/image3.png)
 
-查看Android提供的'代号、标记和Build号'对照表可以知道这个版本对应的Android版本为7.1和7.0:
+查看 Android 提供的'代号、标记和 Build 号'对照表可以知道这个版本对应的 Android 版本为 7.1 和 7.0:
 
 ![代号、标记和Build号](./picture/image4.png)
 
-对于Oreo版本， SDK26是给Android8.0, SDK27是给Android8.1.
+对于 Oreo 版本， SDK26 是给 Android8.0, SDK27 是给 Android8.1.
 
 ![SDK26、27版本的Xposed框架](./picture/image5.png)
 
-另外，每次编写Xposed模块代码都需要重启才能生效，这是非常低效的，所以他被用于一些持久化的场景，
-例如自动抢红包、去掉其他App中的弹窗等等。
+另外，每次编写 Xposed 模块代码都需要重启才能生效，这是非常低效的，所以他被用于一些持久化的场景，
+例如自动抢红包、去掉其他 App 中的弹窗等等。
 
-但目前出来很多Xposed的衍生品，例如EdXposed，它在Xposed基础上的Xposed模块不用修改任何API就可以直接在高版本上
-基于EdXposed框架执行。
+但目前出来很多 Xposed 的衍生品，例如 EdXposed，它在 Xposed 基础上的 Xposed 模块不用修改任何 API 就可以直接在高版本上
+基于 EdXposed 框架执行。
 
 ![EdXposed仓库Readme.md](./picture/image6.png)
 
-除此之外，还有太极框架、VirtualApp以及Ratel等。
+除此之外，还有太极框架、VirtualApp 以及 Ratel 等。
 
-## Xposed框架安装与插件开发
+## Xposed 框架安装
 
 首先，在 GitHub 上搜索 XposedInstaller（3.1.5 版本） 并尝试安装，但我只找到了它的 Android 项目文件，而没有直接的 APK 文件。
 
@@ -50,66 +50,83 @@ Xposed最后的发行版是v89，发行时间是2017年12月18日.
 
 ![Libsuperuser maven仓库的图片](./picture/image2.png)
 
-
-我在XposedInstaller APK上下载Xposed失败，还没有分析原因。
+我在 XposedInstaller APK 上下载 Xposed 失败，还没有分析原因。
 
 ![Xposed error image](./picture/xposed.png)
 
+## Xposed 插件开发
 
-Xposed Framework just provides a convenient interface as far as Frida do. Specially, modifying system
+Xposed 框架与 Frida 类似，只是提供了便捷的界面。具体来说，修改系统或应用功能仍然需要各种插件。
 
-or app functionalities still requires various plugins.
+1. 开始
 
-1. Init
+   创建一个空的 Android 项目。准备钩住“String fun(String x)”函数。
 
-   Create a empty android project. Prepare to hook 'String fun(String x)' function.
+   切换到“项目”视图，修改“app/src/main”目录下的“AndroidManifest.xml”文件
 
-   Switch to the Project view, modify 'AndroidManifest.xml' file under the 'app/src/main' directory
+   并在<activity android:name=".MainActivity">标签前添加以下代码，如图所示。
 
-and add the following code before the <activity android:name=".MainActivity"> tag as shown.
+   ```java
+       <meta-data
+           android:name="xposedmodule"
+           android:value="true">
+       <meta-data
+           android:name="xposeddescription"
+           android:value="It's a Xposed plugin">
+       <meta-data
+           android:name="xposedminversion"
+           android:value="53">
+   ```
 
-    ```java
-        <meta-data 
-            android:name="xposedmodule"
-            android:value="true">
-        <meta-data 
-            android:name="xposeddescription"
-            android:value="It's a Xposed plugin">
-        <meta-data 
-            android:name="xposedminversion"
-            android:value="53">
-    ```
+   名为 xposedmodule 的“meta-data”标签应将其对应值设置为 true，这将标记该应用为 Xposed 模块；
 
-    'meta-data' tag with name xposedmodule should have its corresponding value set to true, this marks
+   名为 xposeddescription 的标签标记 Xposed 模块的对应描述；
 
-the application as the Xposed module; Tag with name xposeddescription marks the corresponding description
- 
-of Xposed module; Tag with name xposedminversion marks the min version as it supports.
+   名为 xposedminversion 的标签标记其支持的最低版本。
 
-    Then use USB to connect Android device and install this app.
+   然后使用 USB 连接 Android 设备并安装此应用程序。运行该 App，你会在 XposedInstaller 应用后，选择‘模块’即可看到这个 Xposed 模块。
 
-2. Import dependency
+2. 引入依赖
 
-    Import the third-party Xposde API JAR file, XposedBridge.jar.
+   导入第三方 Xposde API JAR 文件 XposedBridge.jar。
 
-    ```java
-    compileOnly 'de.robv.android.xposed:api:82'
-    ```
+   ```java
+   compileOnly 'de.robv.android.xposed:api:82'
+   compileOnly 'de.robv.android.xposed:api:82:sources'
+   ```
 
-3. Write the real Hook code
+3. 创建真正的 Hook 代码
 
-    Xposed implement Hook by IXpsedHookLoadPackage interface. You should rewrite functions.
+   Xposed 通过 IXpsedHookLoadPackage 接口实现 Hook，需要重写相关函数。
 
-    ```java
-        void handleLoadPackage(XC_LoadPackage.LoadPackageParam laodPackageParam)
-        void beforeHookedMethod(MethodHookParam param)
-        void agterHookedMethod(MethodHookParam param)
-    ```
+   ```java
 
-4. Create init file for Xposed module
+   public class HookTest implements IXposedHookLoadPackage{
+       void handleLoadPackage(XC_LoadPackage.LoadPackageParam laodPackageParam) throws Throwable{
 
-    It's necessary to create init file that Xposed can be identified.
+           if(loadPackageParam.packageName.equals("com.roysue.demo02")){
+               XposedBridge.log(loadPackageParam.packageName+" has Hooked");
+               Class clazz = laodPackageParam.classLoader.loadClass("com.roysue.demo02.MainActivity");
+               XposedHelpers.findAndHookMethod(clazz,
+                       "fun",
+                       String.class,
+                       new XC_MethodHook(){
+                           void beforeHookedMethod(MethodHookParam param) throws Throwable{
+                               super.beforHookedMethod(param);
+                               XposedBridge.log("input : "+ param.args[0]);
+                           }
+                           void afterHookedMethod(MethodHookParam param) throws Throwable{
+                                param.setResult("You has been hijacked");
+                           }
+                       });
+           }
+       }
+   }
 
+   ```
 
+4. 在XposedDemo中添加Xposed模块的入口点
 
+   为了使Xposed框架能够知道哪个函数执行了Hook，点击main文件夹，再依次选择New->Folder->Assets Folders完成assets文件夹的创建。
 
+   在该文件夹中创建一个xposed_init文件，将才创建的Hook类的完整类名写进xposed_init文件中。
