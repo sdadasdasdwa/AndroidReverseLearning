@@ -77,6 +77,25 @@ Https的整个通信流程被总结为4个阶段：发出请求、身份验证�
 
 ## Hook模拟抓包
 
+用moveTV.apk(com.cz.babySister)作为示例，首先删除旧的objection.log文件，旧的目录如下：
+
+![旧的objection.log文件路径](./picture/image9.png)
+
+删除成功后，运行'android hooking list classes' 获取App已加载的所有类。
+
+exit命令退出objection，将objection.log改名为objectionChapter07-1.log并保存在其他地方。
+
+```shell
+# linux
+cat objectionChapter07-1.log | grep -i okhttp
+
+# windows
+findstr /i "okhttp" objectionChapter07-1.log
+```
+
+使用上述命令过滤HTTPURLConnection和okhttp(3)相关类:
+
+![objection.log文件过滤内存类](./picture/image10.png)
 
 
 
