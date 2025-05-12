@@ -97,5 +97,14 @@ findstr /i "okhttp" objectionChapter07-1.log
 
 ![objection.log文件过滤内存类](./picture/image10.png)
 
+过滤后把内容导入2.txt文本文件中，objection explore --help会提示使用-c参数执行指定文件中的Objection命令。
+
+```shell
+objection -g com.cz.babySister explore -c 2.txt
+```
+![objection命令-c参数执行](./picture/image11.png)
+
+> [!NOTE] 
+> Hook太多可能导致崩溃，可以把文本文件分成几份进行Hook
 
 
