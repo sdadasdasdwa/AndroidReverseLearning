@@ -107,4 +107,45 @@ objection -g com.cz.babySister explore -c 2.txt
 > [!NOTE] 
 > Hook太多可能导致崩溃，可以把文本文件分成几份进行Hook
 
+> [!TIP]
+> 2025年5月14号时移动TV服务器已经无效，所以在发起网络请求时并没有收到reponse响应消息
+> 估计只有404 NOT FOUND
+
+
+如果按照正常情况，我能在点击登陆后打印出被调用的函数，比如'com.android.okhttp.internal.http.RealResponseBody.source()'函数
+
+```shell
+android hooking watch class_method com.android.okhttp.internal.http.RealResponseBody.source
+--dump-args --dump-backtrace --dump-return
+```
+
+最终定位到App中关键的网络数据包发送函数是‘com.cz.babySister.c.a.a'函数。
+
+对定位到的函数进行Hook得到结果不管是网络请求地址还是用户名和密码都清晰可见。
+
+从这个案例，通过过滤网络框架的关键字的批量Hook对快速定位App中收发数据包的帮助是巨大的。
+
+但是以上有个弊端：如果App本身使用第三方网络请求框架并且本身使用强度非常大的混淆，那么Hook定位抓包就失效了。
+
+这里介绍一个能够完成混淆后的okhttp Hook的项目：okhttpLogger-Frida，
+
+在这个项目中，Hook的方法脱离了直接经过字符串匹配的方式，反而通过获取所有类并利用okhttp3框架的一些特性去
+
+验证App中是否使用了okhttp3这个网络通信框架。
+
+具体使用方式：
+
+1. 将okhttpfind.dex文件使用adb推送到/data/local/tmp目录下
+
+2. 启动App通过如下命令将okhttp_poker.js注入App中
+
+  ```
+  frida -U -l okhttp_poker.js
+  ```
+
+3. 按照提示输入find命令寻找okhttp框架的功能
+
+4. 将找到的结果全部复制并覆盖原本okhttp_pokker.js脚本关于okhttp类的一些定义。
+
+5. 修改完后重新注入App中，执行完hold函数后，便会发现一堆网络连接的内容。
 
