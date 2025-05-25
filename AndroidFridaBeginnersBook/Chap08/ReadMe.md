@@ -102,7 +102,7 @@ plugin wallbreaker objectionsearch java.net.HttpURLConnection
 
 3. 根据上一步确认的HttpConnectionImp具体实现类后进行watch class
 ```Frida
-android Hooking watch class com.android.okhttp.internal.hue.HttpURLConnectionImpl
+android hooking watch class com.android.okhttp.internal.hue.HttpURLConnectionImpl
 ```
 最终发现Demo使用额每个函数都被调用到了。
 
@@ -120,4 +120,56 @@ function main(){
 
 到这里HttpURLConnection的自吐脚本暂时开发完毕了，读者可以进一步开发，从而构成一个完整的网络通讯库自吐脚本。
 
-   
+### 第三方库okhttp3自吐脚本开发
+
+首先，弄清楚okhttp3的使用流程。
+
+1. 创建okhttpClient对象
+```Java
+OkhttpClient client = new OkhttpClient();
+```
+上述是默认的构造方法，它本身帮助我们自动配置了许多默认项如连接池、超时设置、重定向策略、缓存、ssl/tls配置、拦截器、代理设置等等
+
+2. 创建Request对象
+包括请求url、请求头、请求体等等都在request对象中设置，通过建造者模式进行创建。
+
+3. 发起网络请求
+```Java
+client.newCall(request).enqueue(new Okhttp.Callback(){
+    public void onFailure(){
+        ......
+    }
+
+    public void onSuccess(){
+        ......
+    }
+})
+```
+
+我们关注几个方面，请求网址、请求头、请求体以及响应消息，现在newCall函数传入的request对象能自吐出前3项。
+
+因此，我们先对该方法进行hook
+
+```Objection
+android hooking watch class_method xx.xx.xx.newCall --dump-return --dump-backtrace --dump-args
+```
+
+结果打印出了接收request对象的函数调用栈，于是用frida进行hook打印
+
+```javascript
+function main(){
+    Java.perform(function(){
+        var client = Java.use("xx.xx.OkhttpClient")
+        client.newCall.implementation = function(request){
+            console.log('request => ' , request.toString())
+            return this.newCall(request)
+        }
+    })
+}
+```
+
+根据打印结果你可以看到request对象中的数据。
+
+
+
+
