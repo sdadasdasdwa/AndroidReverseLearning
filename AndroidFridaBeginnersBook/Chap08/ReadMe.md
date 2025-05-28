@@ -83,7 +83,10 @@ function main(){
 }
 setImmediate(main)
 ```
+
 ![frida脚本hook urlstr](./picture/image2.png)
+
+打印的url地址如上图所示。
 
 2. 根据上一步整理的关键收发包函数会发现剩下的都是HttpURLConnection类中的函数，于是对其整个类和构造函数进行Hook
 ```Frida
@@ -100,17 +103,26 @@ android heap search instances java.net.HttpURLConnection
 plugin wallbreaker objectionsearch java.net.HttpURLConnection
 ```
 
-有两种方法获取：
+![objection未搜索到HttpURLConnection实例](./picture/image3.png)
+
+在Google官网API网站发现，这个HttpURLConnection类其实是一个抽象类。
+
+如何确认在运行过程中抽象类的具体实现，可以采用以下两种方法：
 - 纯逆向方法。通过Frida Hook打印出openConnection函数的返回值的类名result.$className
   或者用Objection Hook openConnection函数只不过发现类名的后面出现本次连接的网址字符串。
 
 - 通过AS中debug功能在底部看到connect的类名。
 
-3. 根据上一步确认的HttpConnectionImp具体实现类后进行watch class
+![hook openConnection方法](./picture/image4.png)
+
+1. 根据上一步确认的HttpConnectionImp具体实现类后进行watch class
 ```Frida
-android hooking watch class com.android.okhttp.internal.hue.HttpURLConnectionImpl
+android hooking watch class com.android.okhttp.internal.huc.HttpURLConnectionImpl
 ```
-最终发现Demo使用额每个函数都被调用到了。
+
+![hook HttpURLConnectionImpl实例类](./picture/image5.png)
+
+可以看到Demo使用额每个函数都被调用到了。
 
 最终获取请求参数的自吐脚本：
 ```javascript
@@ -123,6 +135,8 @@ function main(){
     })
 }
 ```
+
+![frida hook setRequestProperty方法](./picture/image6.png)
 
 到这里HttpURLConnection的自吐脚本暂时开发完毕了，读者可以进一步开发，从而构成一个完整的网络通讯库自吐脚本。
 
