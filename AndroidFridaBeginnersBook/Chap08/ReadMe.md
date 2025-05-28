@@ -62,8 +62,13 @@ connection.disconnect()
 android hooking watch class java.net.URL
 android hooking watch class_method java.net.URL.$init --dump-args --dump-backtrace --dump-return
 ```
+![objection hook java.net.URL类](./picture/image1.png)
 
 根据打印的堆栈来看，就选取调用栈最浅的java.net.ULR.$init(java.lang.String)函数完成自吐脚本。
+
+```frida
+frida -U -l urlstr.js com.example.webdemo
+```
 
 ```javascript
 function main(){
@@ -78,6 +83,7 @@ function main(){
 }
 setImmediate(main)
 ```
+![frida脚本hook urlstr](./picture/image2.png)
 
 2. 根据上一步整理的关键收发包函数会发现剩下的都是HttpURLConnection类中的函数，于是对其整个类和构造函数进行Hook
 ```Frida
