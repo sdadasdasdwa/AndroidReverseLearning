@@ -211,7 +211,12 @@ newRealCall()函数创建了一个新的RealCall对象，RealCall对象是okhttp
 
 因此，只有Hook了execute()和enqueue(new Callback())才能真正保证每个从okhttp出去的请求能被Hook到。
 
+> [!CAUTION]
+> 该方法割裂请求与相应分开去找Hook点，只能看到request，无法同时看到response.可以采用okhttp拦截器Interceptor来解决。
 
+拦截器原理：最上层的拦截器向下传递一个request，并请求下层拦截器返回一个response，下层的拦截器收到request继续向下传递，
+并请求返回一个response，直到传递最后一个拦截器，它对这个request进行处理并返回一个response，然后这个response层层向上
+传递，最终传递到最上层。这样最上层的拦截器就得到了response，整个过程形成了一个拦截器的完整递归调用链。
 
 
 
