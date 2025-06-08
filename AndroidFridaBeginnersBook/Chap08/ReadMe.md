@@ -218,6 +218,21 @@ newRealCall()函数创建了一个新的RealCall对象，RealCall对象是okhttp
 并请求返回一个response，直到传递最后一个拦截器，它对这个request进行处理并返回一个response，然后这个response层层向上
 传递，最终传递到最上层。这样最上层的拦截器就得到了response，整个过程形成了一个拦截器的完整递归调用链。
 
+![拦截器关键过程方法](./picture/image10.png)
+
+* interceptors : 空的拦截器容器
+* client.interceptors : 用户自定义的应用拦截器集合
+* RetryAndFollowUpInterceptor(client) : 用于取消、失败重试、重定向
+* BridgeInterceptor(client.cookieJar) : 对于Request，把用户请求转为HTTP请求；对于Response，把Http相应转换为用户友好的响应
+* CacheInterceptor(client.cache) : 用于读写缓存、根据策略决定是否使用
+* ConnectInterceptor : 实现和服务器建立连接
+* CallServerInterceptor : 真正发起网络请求的Interceptor
+
+![拦截器Interceptor调用链](./picture/image11.jpeg)
+
+
+
+
 
 
 
