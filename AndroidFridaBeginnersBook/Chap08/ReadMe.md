@@ -171,24 +171,48 @@ client.newCall(request).enqueue(new Okhttp.Callback(){
 因此，我们先对该方法进行hook
 
 ```Objection
-android hooking watch class_method xx.xx.xx.newCall --dump-return --dump-backtrace --dump-args
+android hooking watch class_method okhttp3.OkHttpClient.newCall --dump-return --dump-backtrace --dump-args
 ```
 
-结果打印出了接收request对象的函数调用栈，于是用frida进行hook打印
+![objection hook newCall方法](./picture/image7.png)
+
+结果打印出了接收request对象的函数调用栈，可以看到newCall方法中传入的request对象的数据信息
+
+接下来使用frida进行hook打印，
 
 ```javascript
 function main(){
     Java.perform(function(){
-        var client = Java.use("xx.xx.OkhttpClient")
-        client.newCall.implementation = function(request){
-            console.log('request => ' , request.toString())
-            return this.newCall(request)
+        var OkHttpClient = Java.use("okhttp3.OkHttpClient")
+
+        OkHttpClient.newCall.implementation = function(request){
+            var result = this.newCall(request)
+            console.log(request.toString())
+            return result
         }
     })
 }
 ```
 
-根据打印结果你可以看到request对象中的数据。
+![frida hook newCall方法](./picture/image8.png)
+
+根据打印结果你可以看到Frida注入目标App后的执行结果。观察结果，发现request的自吐脚本基本开发完毕。
+
+> [!CAUTION]
+> 实际上，Hook Request的问题远没有完美解决，此Hook同样可能遗漏或多出部分请求，因为存在Call后没有发出实际请求的情况。
+
+![kotlin语言下的okhttp中newCall方法](./picture/image9.png)
+
+我们继续回头看newCall()函数的实现，会发现newCall()函数调用了RealCall.newRealCall()函数（java语言是这样，图中
+是kotlin语言下的newCall函数，它返回一个RealCall对象）。
+
+newRealCall()函数创建了一个新的RealCall对象，RealCall对象是okhttp3.Call接口的一个实现，也是okhttp3中Call的唯一实现，
+表示一个等待执行的请求且只能被执行一次。实际上，到这一步请求依然可以被取消。
+
+因此，只有Hook了execute()和enqueue(new Callback())才能真正保证每个从okhttp出去的请求能被Hook到。
+
+
+
 
 
 
