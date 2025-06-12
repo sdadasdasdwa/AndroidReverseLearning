@@ -230,8 +230,62 @@ newRealCall()函数创建了一个新的RealCall对象，RealCall对象是okhttp
 
 ![拦截器Interceptor调用链](./picture/image11.jpeg)
 
+### 给OkHttpClient添加用户自定义拦截器
 
+自定义LoggingInterceptor拦截器纸打印URL和headers，用户自定义拦截器主要有两种：应用拦截器和网络拦截器。
 
+修改okhttpClient创建方式，其有三种方式：
+
+1. 默认参数
+2. Builder建造者模式
+3. 在原有okclient对象基础上创建一个新的okhttp客户端
+
+![使用自定义拦截器发起网络请求](./picture/image12.png)
+
+根据官方okhttp-logging-interceptor可以写一个更详细的LoggingInterceptor.
+
+为了将这个Hook方案推广到其他使用okhttp框架的App上，可以直接把这部分代码编译成DEX注入到其他应用中。
+
+Frida可以通过如下API将DEX加载到内存中，从而使用DEX中的方法和类。 
+
+```
+Java.openClassFile(dexPath).load()
+```
+
+> [!TIP]
+> Kotlin/Java 源码 编译成 .class 字节码文件，Android 不运行 JVM 字节码，它使用 Dalvik（旧）或 ART（新），
+> 所以.class 文件需要被转换为 .dex（Dalvik Executable）文件。多个 .class 会合并成一个 .dex文件。
+> .dex 文件是机器运行用的，但我们无法直接读懂，所以我们用反编译工具（如 baksmali）把 .dex → .smali。.smali 是 Dalvik 字节码的一种类汇编语言。
+
+运行上述App后，在build目录下找到对应apk文件，对文件进行解压后得到classes.dex文件，更名为okhttp3logging.dex,
+并将其推送到测试手机的/data/local/tmp目录下。
+
+```javascript
+function hook_okhttp3(){
+    Java.perform(function(){
+        //加载目标dex
+        Java.openClassFile("/data/local/tmp/okhttp3logging.dex").load()
+
+        var MyInterceptor = Java.use("com.hook.okhttp.frida.LoggingInterceptor")
+        var MyInterceptorObj = MyInterceptor.$new()
+
+        var Builder = Java.use("okhttp3.OkHttpClient$Builder")
+        console.log(Builder)
+
+        Builder.build.implementation = function(){
+            this.networkInterceptors().add(MyInterceptorObj)
+            return this.build
+        }
+        console.log("hook_okhttp3...")
+    })
+}
+```
+
+由于client在app启动较早时期创建，所以最好使用spawn模式Hook。
+
+```
+frida -U -f com.xxx.webdemo -l hookInterceptor.js --no-pause
+```
 
 
 
