@@ -240,6 +240,8 @@ newRealCall()函数创建了一个新的RealCall对象，RealCall对象是okhttp
 2. Builder建造者模式
 3. 在原有okclient对象基础上创建一个新的okhttp客户端
 
+![自定义拦截器LoggingInterceptor相关代码](./picture/image16.png)
+
 ![使用自定义拦截器发起网络请求](./picture/image12.png)
 
 根据官方okhttp-logging-interceptor可以写一个更详细的LoggingInterceptor.
