@@ -9,19 +9,35 @@ function hook_okhttp3() {
         var Builder;
         try {
             Builder = Java.use("okhttp3.OkHttpClient$Builder");
-            console.log("Builder loaded");
+            console.log("Builder loaded : ", Builder);
         } catch (e) {
             console.log("Builder not found: " + e);
             return;
         }
-        // var Builder = Java.use("okhttp3.OkHttpClient$Builder")
-        // console.log(Builder)
 
         Builder.build.implementation = function () {
             console.log("Builder.build.implementation...")
             this.networkInterceptors().add(MyInterceptorObj)
             return this.build()
         }
+
+        // Builder.$init.overloads.forEach(function (overload) {
+        //     overload.implementation = function () {
+        //         console.log("Builder Constructor Called");
+        //         return overload.apply(this, arguments);
+        //     };
+        // });
+
+        // Builder.build.overloads.forEach(function (overload) {
+        //     overload.implementation = function () {
+        //         console.log("Builder.build() hooked!");
+        //         var Throwable = Java.use("java.lang.Throwable");
+        //         var t = Throwable.$new();
+        //         console.log(t.getStackTrace().toString());
+        //         return overload.call(this);
+        //     };
+        // });
+
         console.log("hook_okhttp3...")
     })
 }
