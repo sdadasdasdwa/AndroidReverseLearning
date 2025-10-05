@@ -8,7 +8,7 @@ def on_message(message, data):
         print(message)
 
 device = frida.get_usb_device();
-process = device.attach('com.roysue.demo02')
+process = device.attach('com.example.webdemo')
 
 with open('4.js') as f:
     jscode = f.read()
