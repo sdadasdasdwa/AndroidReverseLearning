@@ -7,14 +7,14 @@ def on_message(message, data):
     else:
         print(message)
 
-device = frida.get_usb_device();
-process = device.attach('com.example.webdemo')
+device = frida.get_remote_device();
+process = device.attach("com.example.webdemo")
 
-with open('4.js') as f:
+with open('4.js',"r",encoding="utf-8") as f:
     jscode = f.read()
 script = process.create_script(jscode)
 
-script.on('messsage',on_message)
+script.on('message',on_message)
 script.load()
 
 command = ""
