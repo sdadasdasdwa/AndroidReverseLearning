@@ -182,7 +182,7 @@ plugin wallbreaker objectsearch android.app.Dialog
 plugin wallbreaker objectsearch android.widget.PopupWindow
 ```
 
-![搜索到的相关弹窗类实例](./picture/image05.png)
+![搜索到的相关弹窗类实例](./picture/image06.png)
 
 ### Hook 注入
 
