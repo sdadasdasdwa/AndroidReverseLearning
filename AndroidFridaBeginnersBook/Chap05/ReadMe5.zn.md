@@ -355,7 +355,7 @@ java -jar smali-2.5.2-2771eae0-dirty-fat.jar assemble E:\SoftWare\Android_tools\
 
 2. App 在加固后的入口点变成了壳的入口点，因此在重打包之后还需要修改 AndroidManifest 的入口类。
 
-为了解决第一个问题，需要在使用 apktool 反编译 APK 时选择不反编译 dex 文件并删除壳的 dex，
+为了解决第一个问题，需要在使用 apktool 反编译 APK 时选择不反编译 dex 文件并删除壳的 dex(只解包资源文件res、manifest等)，
 而 apktool 的-s 参数就提供了不反编译 APK 中 dex 文件的功能，apktool 的反编译结果如下：
 
 ```shell
