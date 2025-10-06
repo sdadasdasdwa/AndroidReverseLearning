@@ -5,7 +5,7 @@ function CallSecretFunc(){
         Java.choose('com.example.demo.MainActivity',{
             onMatch: function(instance){
                
-                instance.secret()
+                instance.secret("Ricardo P")
                 
                 
             },
