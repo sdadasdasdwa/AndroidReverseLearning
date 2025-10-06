@@ -149,3 +149,7 @@ android hooking watch class_method com.android.okhttp.internal.http.RealResponse
 
 5. 修改完后重新注入App中，执行完hold函数后，便会发现一堆网络连接的内容。
 
+okhttpLogger-Frida这样优秀的项目，所以我们能够应对混淆apk中的okhttp，其原理是通过反射获取所有类。
+
+但如果app安全措施进一步加强，比如编译时去除所有调试信息，或者换用其他第三方网络通讯框架，这种方式就没有效果了。
+
