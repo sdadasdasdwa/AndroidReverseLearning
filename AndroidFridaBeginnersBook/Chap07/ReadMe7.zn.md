@@ -123,9 +123,9 @@ android hooking watch class_method com.android.okhttp.internal.http.RealResponse
 
 对定位到的函数进行Hook得到结果不管是网络请求地址还是用户名和密码都清晰可见。
 
-从这个案例，通过过滤网络框架的关键字的批量Hook对快速定位App中收发数据包的帮助是巨大的。
+从这个案例，**通过过滤网络框架的关键字的批量Hook对快速定位App中收发数据包的帮助是巨大的**。
 
-但是以上有个弊端：如果App本身使用第三方网络请求框架并且本身使用强度非常大的混淆，那么Hook定位抓包就失效了。
+但是以上有个弊端：**如果App本身使用第三方网络请求框架并且本身使用强度非常大的混淆，那么Hook定位抓包就失效了。**
 
 这里介绍一个能够完成混淆后的okhttp Hook的项目：okhttpLogger-Frida，
 
