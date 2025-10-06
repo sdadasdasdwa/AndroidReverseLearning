@@ -273,3 +273,4 @@ for i in range(20,30):
 
 ```
 
+之间第三章时由于使用get_usb_devices()方法总是报错，导致现在第四章python规模化rpc调用这块出现问题，现已实现。
