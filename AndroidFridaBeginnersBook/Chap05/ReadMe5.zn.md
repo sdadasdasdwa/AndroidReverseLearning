@@ -250,7 +250,7 @@ for /r D:\MyFolder %i in (*.dex) do findstr /i /c:"UpdateDialogFragment" "%i" &&
 
 确定具体的 dex 文件后，使用 Jadx 打开该文件并找到 “UpdateDialogFragment ”方法。
 
-该方法是 DialogFragment 的扩展，有关升级的代码没有在 UpdateDialogFragment 类中显示。
+该方法是 DialogFragment 的扩展，有关升级显示的代码没有在 UpdateDialogFragment 类中显示。
 
 ![DialogFragment反编译代码](./picture/image10.png)
 
