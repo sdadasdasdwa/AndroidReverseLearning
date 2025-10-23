@@ -49,6 +49,10 @@ Burp Suite那边配置好监听端口后开启拦截：
 
 Https 的方式我用Burp Suite解决了，尽管不如Fiddle Everywhere那么好用，磕磕盼盼还是勉强成功。
 
+> [!WARN]
+> 通过把BS证书导入到设置中用户信任列表中实现抓取HTTPS包，该方式只对浏览器App生效。
+> 安卓7.0以上，系统默认不信任用户证书用于App，需要将证书放在系统证书中存储。
+
 用 HTTP/HTTPS 代理用于 Web 流量调试，如果目标是 浏览器访问网页 → 拦截 & 修改 HTTP 请求/响应。
 
 如果目标是 **一个应用程序通过 TCP socket 直接连服务器 → 想拦截流量， 用 SOCKS5 代理（比如游戏客户端、SSH、BitTorrent）**。
